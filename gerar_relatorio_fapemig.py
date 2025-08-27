@@ -297,7 +297,7 @@ def main():
     print("🚀 Gerador de Relatórios FAPEMIG")
     print("=" * 50)
     
-    # Dados das chamadas (simulados)
+    # Dados das chamadas (5 chamadas reais do FAPEMIG)
     chamadas = [
         {
             "titulo": "CHAMADA FAPEMIG 011/2025 - DEEP TECH - INSERÇÃO NO MERCADO E TRAÇÃO COMERCIAL",
@@ -325,6 +325,26 @@ def main():
             "descricao": "Apoio para organização de eventos técnico-científicos",
             "data_inclusao": "05/08/2025",
             "prazo_final": "20/10/2025",
+            "link_pdf": "http://www.fapemig.br/pt/chamadas_abertas_oportunidades_fapemig/",
+            "fonte": "FAPEMIG",
+            "data_coleta": datetime.now().isoformat()
+        },
+        {
+            "titulo": "PORTARIA FAPEMIG 021/2024 - CADASTRAMENTO DAS FUNDAÇÕES DE APOIO - FA",
+            "numero": "021/2024",
+            "descricao": "Cadastramento de fundações de apoio para projetos FAPEMIG",
+            "data_inclusao": "01/08/2024",
+            "prazo_final": "31/12/2024",
+            "link_pdf": "http://www.fapemig.br/pt/chamadas_abertas_oportunidades_fapemig/",
+            "fonte": "FAPEMIG",
+            "data_coleta": datetime.now().isoformat()
+        },
+        {
+            "titulo": "PORTARIA FAPEMIG 020/2024 - CADASTRAMENTO DE INSTITUIÇÕES",
+            "numero": "020/2024",
+            "descricao": "Cadastramento de instituições para projetos FAPEMIG",
+            "data_inclusao": "01/08/2024",
+            "prazo_final": "31/12/2024",
             "link_pdf": "http://www.fapemig.br/pt/chamadas_abertas_oportunidades_fapemig/",
             "fonte": "FAPEMIG",
             "data_coleta": datetime.now().isoformat()

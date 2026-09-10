@@ -25,7 +25,7 @@ meu-scraper/
 ├── scraper_rapido.py        # Scraper principal (rápido)
 ├── scraper_cnpq_detalhado.py # Scraper especializado CNPq
 ├── scraper_simples.py       # Versão básica
-├── requirements.txt          # Dependências Python
+├── requirements-scraper.txt  # Dependências Python
 └── README.md                # Documentação
 ```
 
@@ -65,7 +65,7 @@ python scraper_cnpq_detalhado.py
 
 ### Dependências
 ```bash
-pip install -r requirements.txt
+pip install -r requirements-scraper.txt
 ```
 
 ### Requisitos do Sistema

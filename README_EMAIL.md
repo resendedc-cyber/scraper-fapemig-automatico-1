@@ -58,7 +58,7 @@ Para testar antes de usar no GitHub Actions:
 
 ```bash
 # 1. Instalar dependências
-pip install -r requirements.txt
+pip install -r requirements-scraper.txt
 
 # 2. Configurar variáveis de ambiente
 export EMAIL_USER="ccjota51@gmail.com"

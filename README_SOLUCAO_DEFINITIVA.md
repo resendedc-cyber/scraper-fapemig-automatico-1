@@ -156,7 +156,7 @@ export EMAIL_DESTINO=destinatario@email.com
 Certifique-se de ter as dependências instaladas:
 
 ```bash
-pip install -r requirements.txt
+pip install -r requirements-scraper.txt
 ```
 
 ## 🎯 PROBLEMAS RESOLVIDOS

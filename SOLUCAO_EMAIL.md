@@ -61,7 +61,7 @@ Antes de executar no GitHub Actions, teste localmente:
 
 ```bash
 # 1. Instalar dependências
-pip install -r requirements.txt
+pip install -r requirements-scraper.txt
 
 # 2. Configurar variáveis de ambiente
 export SMTP_SERVER="smtp.gmail.com"

@@ -109,14 +109,12 @@ jobs:
           "
           
       - name: 📧 Enviar email SIMPLIFICADO (apenas USER + PASS)
+        if: ${{ secrets.EMAIL_USER != '' && secrets.EMAIL_PASS != '' }}
         env:
           EMAIL_USER: ${{ secrets.EMAIL_USER }}
           EMAIL_PASS: ${{ secrets.EMAIL_PASS }}
         run: |
           echo "📧 ENVIO SIMPLIFICADO - Apenas 2 variáveis!"
-          echo "👤 Usuário: ${{ secrets.EMAIL_USER }}"
-          echo "🔑 Senha: ${{ secrets.EMAIL_PASS }}"
-          
           python enviar_email_simples.py
           
       - name: 📁 Upload arquivos gerados

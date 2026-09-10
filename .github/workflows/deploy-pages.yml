@@ -13,15 +13,15 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
     name: Publicar diretório dist
+    env:
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
 
     steps:
       - name: Checkout do código
         uses: actions/checkout@v4
 
       - name: Garantir projeto no Cloudflare Pages
-        env:
-          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
         run: |
           if ! npx wrangler pages project list --json | grep -q '"name":"scraper-fapemig-automatico"'; then
             npx wrangler pages project create scraper-fapemig-automatico --production-branch=main

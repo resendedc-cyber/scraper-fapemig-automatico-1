@@ -3,6 +3,7 @@
 
 import json
 import re
+import argparse
 from datetime import datetime, timezone
 from pathlib import Path
 from urllib.parse import urljoin
@@ -48,6 +49,22 @@ def clean_text(value):
     return re.sub(r"\s+", " ", value or "").strip()
 
 
+def extract_detail_dates(url):
+    """Busca datas na página individual quando a listagem não as exibe."""
+    try:
+        response = requests.get(
+            url,
+            headers={"User-Agent": "Mozilla/5.0 (compatible; OportunidadesBot/1.0)"},
+            timeout=20,
+        )
+        if "text/html" not in response.headers.get("content-type", ""):
+            return []
+        text = clean_text(BeautifulSoup(response.text, "html.parser").get_text(" "))
+        return DATE_PATTERN.findall(text)
+    except requests.RequestException:
+        return []
+
+
 def extract_items(html, page_url, source_name):
     soup = BeautifulSoup(html, "html.parser")
     items = []
@@ -60,12 +77,22 @@ def extract_items(html, page_url, source_name):
             continue
         seen.add(href)
         context = clean_text(anchor.parent.get_text(" ", strip=True))
+        for parent in anchor.parents:
+            candidate = clean_text(parent.get_text(" ", strip=True))
+            if DATE_PATTERN.search(candidate) and len(candidate) <= 1200:
+                context = candidate
+                break
         dates = DATE_PATTERN.findall(context)
+        if not dates:
+            dates = extract_detail_dates(href)
+        status, prazo_final = classify_status(dates)
         items.append(
             {
                 "titulo": title,
                 "descricao": context[:500],
                 "data_inscricao": " - ".join(dates[:2]),
+                "prazo_final": prazo_final,
+                "status": status,
                 "link_permanente": href,
                 "link_pdf": href if ".pdf" in href.lower() else "",
                 "fonte": source_name,
@@ -73,6 +100,22 @@ def extract_items(html, page_url, source_name):
             }
         )
     return items
+
+
+def classify_status(date_values):
+    """Classifica o edital pelo último prazo encontrado no texto."""
+    parsed_dates = []
+    for value in date_values:
+        try:
+            parsed_dates.append(datetime.strptime(value, "%d/%m/%Y").date())
+        except ValueError:
+            continue
+    if not parsed_dates:
+        return "sem_prazo", ""
+
+    deadline = max(parsed_dates)
+    today = datetime.now(timezone.utc).date()
+    return ("aberto" if deadline >= today else "antigo"), deadline.strftime("%d/%m/%Y")
 
 
 def collect_source(source):
@@ -91,18 +134,47 @@ def collect_source(source):
 
 
 def main():
+    parser = argparse.ArgumentParser(description="Filtra oportunidades por situação")
+    parser.add_argument(
+        "--status",
+        choices=("todos", "aberto", "antigo", "sem_prazo"),
+        default="todos",
+        help="Status a manter no resultado final",
+    )
+    args = parser.parse_args()
     result = {
         "timestamp": datetime.now(timezone.utc).isoformat(),
         "fontes": {},
         "cnpq": [],
         "capes": [],
         "mcti": [],
+        "abertos": [],
+        "antigos": [],
+        "sem_prazo": [],
+        "filtro_aplicado": args.status,
     }
     for key, source in SOURCES.items():
         items, status = collect_source(source)
+        if args.status != "todos":
+            items = [item for item in items if item["status"] == args.status]
         result[key] = items
         result["fontes"][key] = status
         print(f"{source['nome']}: {len(items)} oportunidades ({status['status']})")
+
+    for key in SOURCES:
+        for item in result[key]:
+            grouped_key = {
+                "aberto": "abertos",
+                "antigo": "antigos",
+                "sem_prazo": "sem_prazo",
+            }[item["status"]]
+            result[grouped_key].append(item)
+
+    result["resumo"] = {
+        "abertos": len(result["abertos"]),
+        "antigos": len(result["antigos"]),
+        "sem_prazo": len(result["sem_prazo"]),
+    }
 
     timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
     output = Path(f"oportunidades_governo_{timestamp}.json")

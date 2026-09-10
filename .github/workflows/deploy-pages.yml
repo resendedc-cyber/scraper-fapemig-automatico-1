@@ -21,15 +21,9 @@ jobs:
       - name: Checkout do código
         uses: actions/checkout@v4
 
-      - name: Garantir projeto no Cloudflare Pages
-        run: |
-          if ! npx wrangler pages project list --json | grep -q '"name":"scraper-fapemig-automatico"'; then
-            npx wrangler pages project create scraper-fapemig-automatico --production-branch=main
-          fi
-
-      - name: Publicar no Cloudflare Pages
+      - name: Publicar no Cloudflare Workers
         uses: cloudflare/wrangler-action@v3
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-          command: pages deploy ./dist --project-name=scraper-fapemig-automatico
+          command: deploy

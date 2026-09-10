@@ -80,10 +80,10 @@ def log_scraper_end(scraper_name: str, items_found: int, duration: float):
     logger = get_logger(scraper_name)
     logger.info(f"✅ {scraper_name} concluído")
     logger.info(f"📊 Itens encontrados: {items_found}")
-        logger.info(f"⏱️ Duração: {duration:.1f}s")
+    logger.info(f"⏱️ Duração: {duration:.1f}s")
 
 
-    def log_error(scraper_name: str, error: Exception, context: str = ""):
+def log_error(scraper_name: str, error: Exception, context: str = ""):
     """Log padronizado para erros"""
     logger = get_logger(scraper_name)
     logger.error(f"❌ Erro em {scraper_name}: {error}")

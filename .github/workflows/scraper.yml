@@ -109,13 +109,16 @@ jobs:
           "
           
       - name: 📧 Enviar email SIMPLIFICADO (apenas USER + PASS)
-        if: ${{ secrets.EMAIL_USER != '' && secrets.EMAIL_PASS != '' }}
         env:
           EMAIL_USER: ${{ secrets.EMAIL_USER }}
           EMAIL_PASS: ${{ secrets.EMAIL_PASS }}
         run: |
-          echo "📧 ENVIO SIMPLIFICADO - Apenas 2 variáveis!"
-          python enviar_email_simples.py
+          if [[ -n "$EMAIL_USER" && -n "$EMAIL_PASS" ]]; then
+            echo "📧 Enviando resultados por email"
+            python enviar_email_simples.py
+          else
+            echo "📧 Secrets de email não configurados; envio ignorado"
+          fi
           
       - name: 📁 Upload arquivos gerados
         uses: actions/upload-artifact@v4

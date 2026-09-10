@@ -36,6 +36,9 @@ jobs:
         
       - name: 🧠 Executar scraper inteligente CNPq
         run: python scraper_cnpq_inteligente.py
+
+      - name: 🏛️ Executar coleta oficial CNPq, CAPES e MCTI
+        run: python scraper_oportunidades_governo.py
         
       - name: 🔧 Reorganizar dados para garantir PDFs para todos
         run: |
@@ -130,6 +133,7 @@ jobs:
             editais_rapidos_*.json
             chamadas_cnpq_detalhadas_*.json
             chamadas_cnpq_inteligentes_*.json
+            oportunidades_governo_*.json
             dados_reorganizados_com_pdfs_*.json
           retention-days: 30
           

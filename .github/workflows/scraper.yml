@@ -122,6 +122,19 @@ jobs:
           else
             echo "📧 Secrets de email não configurados; envio ignorado"
           fi
+
+      - name: 🌐 Preparar dados públicos da coleta diária
+        run: |
+          arquivo=$(ls -t oportunidades_governo_*.json | head -1)
+          cp "$arquivo" dist/oportunidades_governo_atual.json
+          echo "📄 Dados publicados: $arquivo"
+
+      - name: 🚀 Publicar coleta diária no Cloudflare Workers
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          command: deploy
           
       - name: 📁 Upload arquivos gerados
         uses: actions/upload-artifact@v4

@@ -49,6 +49,22 @@ KEYWORDS = re.compile(
     re.IGNORECASE,
 )
 DATE_PATTERN = re.compile(r"\b\d{1,2}/\d{1,2}/\d{4}\b")
+DATE_RANGE_PATTERN = re.compile(
+    r"(?:inscri(?:ção|ções)|abertura|início|inicial).*?"
+    r"(\d{1,2}/\d{1,2}/\d{4}).{0,80}?"
+    r"(?:a|até|[-–]).{0,20}?(\d{1,2}/\d{1,2}/\d{4})",
+    re.IGNORECASE,
+)
+PT_DATE_RANGE_PATTERN = re.compile(
+    r"(?:inscri(?:ção|ções)|abertura|início|inicial).*?"
+    r"(\d{1,2})\s+de\s+([a-zç]+)\s+a\s+(\d{1,2})\s+de\s+([a-zç]+)\s+de\s+(\d{4})",
+    re.IGNORECASE,
+)
+MONTHS = {
+    "janeiro": 1, "fevereiro": 2, "março": 3, "abril": 4,
+    "maio": 5, "junho": 6, "julho": 7, "agosto": 8,
+    "setembro": 9, "outubro": 10, "novembro": 11, "dezembro": 12,
+}
 
 
 def fetch(url):
@@ -63,6 +79,24 @@ def fetch(url):
 
 def clean_text(value):
     return re.sub(r"\s+", " ", value or "").strip()
+
+
+def extract_period(text):
+    """Extrai datas de abertura e conclusão do prazo de inscrição."""
+    match = PT_DATE_RANGE_PATTERN.search(text)
+    if match:
+        start_month = MONTHS.get(match.group(2).lower())
+        end_month = MONTHS.get(match.group(4).lower())
+        if start_month and end_month:
+            return (
+                f"{int(match.group(1)):02d}/{start_month:02d}/{match.group(5)}",
+                f"{int(match.group(3)):02d}/{end_month:02d}/{match.group(5)}",
+            )
+    match = DATE_RANGE_PATTERN.search(text)
+    if match:
+        return match.group(1), match.group(2)
+    dates = DATE_PATTERN.findall(text)
+    return (dates[0], dates[1] if len(dates) > 1 else "") if dates else ("", "")
 
 
 def extract_detail_dates(url):
@@ -101,7 +135,7 @@ def extract_items(html, page_url, source_name):
     soup = BeautifulSoup(html, "html.parser")
     items = []
     seen = set()
-    anchors = soup.select("a[href]")
+    anchors = [(anchor, "") for anchor in soup.select("a[href]")]
     if isinstance(source_name, dict) and source_name.get("section"):
         section = next(
             (heading for heading in soup.find_all(["h1", "h2", "h3"])
@@ -110,13 +144,18 @@ def extract_items(html, page_url, source_name):
         )
         if section:
             anchors = []
+            section_status = ""
             for node in section.find_all_next():
                 if node.name == "h1" and node is not section:
                     break
+                if node.name == "h2":
+                    heading = clean_text(node.get_text(" ", strip=True)).lower()
+                    if heading in ("abertos", "fechados"):
+                        section_status = "aberto" if heading == "abertos" else "antigo"
                 if node.name == "a" and node.get("href"):
-                    anchors.append(node)
+                    anchors.append((node, section_status))
 
-    for anchor in anchors:
+    for anchor, section_status in anchors:
         title = clean_text(anchor.get_text(" ", strip=True))
         href = urljoin(page_url, anchor.get("href", ""))
         keyword_pattern = source_name.get("keywords", KEYWORDS) if isinstance(source_name, dict) else KEYWORDS
@@ -134,12 +173,21 @@ def extract_items(html, page_url, source_name):
         dates = DATE_PATTERN.findall(context)
         if not dates:
             dates = extract_detail_dates(href)
+        data_abertura, data_conclusao = extract_period(context)
+        if data_abertura and data_abertura not in dates:
+            dates.extend([data_abertura, data_conclusao] if data_conclusao else [data_abertura])
         status, prazo_final = classify_status(dates)
+        if section_status:
+            status = section_status
+        finalidade = clean_text(anchor.parent.get_text(" ", strip=True))
         items.append(
             {
                 "titulo": title,
                 "descricao": context[:500],
                 "data_inscricao": " - ".join(dates[:2]),
+                "data_abertura": data_abertura,
+                "data_conclusao": data_conclusao,
+                "finalidade": finalidade[:500],
                 "prazo_final": prazo_final,
                 "status": status,
                 "link_permanente": href,

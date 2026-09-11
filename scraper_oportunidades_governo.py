@@ -40,6 +40,7 @@ SOURCES = {
     "cidades": {
         "nome": "Ministério das Cidades",
         "url": "https://www.gov.br/cidades/pt-br/assuntos",
+        "projetos": True,
     },
 }
 
@@ -133,6 +134,8 @@ def extract_pdf_text(url):
 
 def extract_items(html, page_url, source_name):
     soup = BeautifulSoup(html, "html.parser")
+    if isinstance(source_name, dict) and source_name.get("projetos"):
+        return extract_city_projects(soup, page_url)
     items = []
     seen = set()
     anchors = [(anchor, "") for anchor in soup.select("a[href]")]
@@ -199,6 +202,47 @@ def extract_items(html, page_url, source_name):
     return items
 
 
+def extract_city_projects(soup, page_url):
+    """Lista projetos do Ministério agrupados pela área da URL."""
+    items = []
+    seen = set()
+    excluded = {"assuntos", "acesso-a-informacao", "navegacao", "perguntas-frequentes"}
+    for anchor in soup.select("a[href]"):
+        title = clean_text(anchor.get_text(" ", strip=True))
+        href = urljoin(page_url, anchor.get("href", ""))
+        if not title or len(title) < 8 or href in seen:
+            continue
+        if not href.startswith("https://www.gov.br/cidades/pt-br/"):
+            continue
+        parts = [part for part in href.rstrip("/").split("/") if part]
+        if len(parts) < 6 or parts[-1] in excluded:
+            continue
+        if any(term in title.lower() for term in ("navegação", "dúvidas", "acesso à informação")):
+            continue
+        seen.add(href)
+        area_index = parts.index("pt-br") + 1
+        area = parts[area_index].replace("-", " ").title()
+        items.append(
+            {
+                "titulo": title,
+                "descricao": title,
+                "data_inscricao": "",
+                "data_abertura": "",
+                "data_conclusao": "",
+                "finalidade": title,
+                "prazo_final": "",
+                "status": "catalogado",
+                "link_permanente": href,
+                "link_pdf": "",
+                "fonte": "Ministério das Cidades",
+                "data_coleta": datetime.now(timezone.utc).isoformat(),
+                "subgrupo": area,
+                "link_projeto": href,
+            }
+        )
+    return items
+
+
 def classify_status(date_values):
     """Classifica o edital pelo último prazo encontrado no texto."""
     parsed_dates = []
@@ -256,7 +300,7 @@ def main():
     }
     for key, source in SOURCES.items():
         items, status = collect_source(source)
-        if args.status != "todos":
+        if args.status != "todos" and not source.get("projetos"):
             items = [item for item in items if item["status"] == args.status]
         result[key] = items
         result["fontes"][key] = status
@@ -264,6 +308,8 @@ def main():
 
     for key in SOURCES:
         for item in result[key]:
+            if item["status"] not in ("aberto", "antigo", "sem_prazo"):
+                continue
             grouped_key = {
                 "aberto": "abertos",
                 "antigo": "antigos",
@@ -276,6 +322,11 @@ def main():
         "antigos": len(result["antigos"]),
         "sem_prazo": len(result["sem_prazo"]),
     }
+    result["subgrupos_cidades"] = {}
+    for item in result["cidades"]:
+        result["subgrupos_cidades"].setdefault(item["subgrupo"], []).append(
+            {"titulo": item["titulo"], "link_projeto": item["link_projeto"]}
+        )
 
     timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
     output = Path(f"oportunidades_governo_{timestamp}.json")

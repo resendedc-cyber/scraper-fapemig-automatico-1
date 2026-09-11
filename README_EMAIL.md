@@ -46,7 +46,7 @@ Você precisa configurar os seguintes secrets no seu repositório:
 ### **Conteúdo do Email**
 O email incluirá:
 - 📊 Resumo da execução
-- 🏫 UFMG: número de editais
+- 🏫 UFJF: número de editais
 - 🔬 FAPEMIG: número de oportunidades  
 - 🎯 CNPq: número de chamadas
 - 📄 Total de itens com PDFs
@@ -113,7 +113,7 @@ Após a configuração correta, você receberá emails automáticos como este:
 📅 Data/Hora: 18/08/2025 05:00:00
 
 📋 SCRAPER RÁPIDO:
-   🏫 UFMG: 4 editais encontrados
+   🏫 UFJF: 4 editais encontrados
    🔬 FAPEMIG: 3 oportunidades encontradas
    🎯 CNPq: 1 chamadas encontradas
 

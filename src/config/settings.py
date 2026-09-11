@@ -94,8 +94,7 @@ class ConfigManager:
             'ufjf': ScraperConfig(
                 name='UFJF',
                 urls=[
-                    'https://www2.ufjf.br/propp/editais/',
-                    'https://www2.ufjf.br/ufjf/editais/'
+                    'https://www2.ufjf.br/critt/vagas-e-bolsas-do-critt/controle-de-editais-2026/'
                 ],
                 selectors=['h3', 'h4', 'h5', '.edital-item', '.chamada-item', 'a'],
                 keywords=['EDITAL', 'CHAMADA', 'PROGRAMA', 'PROEX', 'PET-SAÚDE'],

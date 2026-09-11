@@ -4,6 +4,7 @@
 import json
 import re
 import argparse
+import subprocess
 from datetime import datetime, timezone
 from pathlib import Path
 from urllib.parse import urljoin
@@ -24,6 +25,12 @@ SOURCES = {
     "mcti": {
         "nome": "MCTI",
         "url": "https://www.gov.br/mcti/pt-br/acompanhe-o-mcti/noticias",
+    },
+    "ufjf": {
+        "nome": "UFJF/CRITT - Bolsas",
+        "url": "https://www2.ufjf.br/critt/vagas-e-bolsas-do-critt/controle-de-editais-2026/",
+        "keywords": re.compile(r"\bbolsa(?:s)?\b", re.IGNORECASE),
+        "section": "1. Vagas:",
     },
 }
 
@@ -65,15 +72,47 @@ def extract_detail_dates(url):
         return []
 
 
+def extract_pdf_text(url):
+    """Lê o texto de um edital PDF para confirmar que é de bolsa."""
+    try:
+        response = requests.get(url, headers={"User-Agent": "Mozilla/5.0"}, timeout=30)
+        result = subprocess.run(
+            ["pdftotext", "-", "-"],
+            input=response.content,
+            capture_output=True,
+            check=False,
+            timeout=30,
+        )
+        return result.stdout.decode("utf-8", errors="ignore")
+    except Exception:
+        return ""
+
+
 def extract_items(html, page_url, source_name):
     soup = BeautifulSoup(html, "html.parser")
     items = []
     seen = set()
+    anchors = soup.select("a[href]")
+    if isinstance(source_name, dict) and source_name.get("section"):
+        section = next(
+            (heading for heading in soup.find_all(["h1", "h2", "h3"])
+             if clean_text(heading.get_text(" ", strip=True)) == source_name["section"]),
+            None,
+        )
+        if section:
+            anchors = []
+            for node in section.find_all_next():
+                if node.name == "h1" and node is not section:
+                    break
+                if node.name == "a" and node.get("href"):
+                    anchors.append(node)
 
-    for anchor in soup.select("a[href]"):
+    for anchor in anchors:
         title = clean_text(anchor.get_text(" ", strip=True))
         href = urljoin(page_url, anchor.get("href", ""))
-        if len(title) < 12 or href in seen or not KEYWORDS.search(title):
+        keyword_pattern = source_name.get("keywords", KEYWORDS) if isinstance(source_name, dict) else KEYWORDS
+        pdf_text = extract_pdf_text(href) if isinstance(source_name, dict) and source_name.get("section") else ""
+        if len(title) < 8 or href in seen or not keyword_pattern.search(title + " " + pdf_text):
             continue
         seen.add(href)
         context = clean_text(anchor.parent.get_text(" ", strip=True))
@@ -82,6 +121,7 @@ def extract_items(html, page_url, source_name):
             if DATE_PATTERN.search(candidate) and len(candidate) <= 1200:
                 context = candidate
                 break
+        context = clean_text(f"{context} {pdf_text}")
         dates = DATE_PATTERN.findall(context)
         if not dates:
             dates = extract_detail_dates(href)
@@ -126,7 +166,9 @@ def collect_source(source):
     for url in urls:
         try:
             html, final_url = fetch(url)
-            items = extract_items(html, final_url, source["nome"])
+            items = extract_items(html, final_url, source)
+            for item in items:
+                item["fonte"] = source["nome"]
             return items, {"url": final_url, "status": "ok", "itens": len(items)}
         except requests.RequestException as error:
             last_error = str(error)

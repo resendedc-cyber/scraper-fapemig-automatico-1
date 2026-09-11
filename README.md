@@ -17,8 +17,8 @@ Sistema automatizado para captura de editais, chamadas públicas e oportunidades
 - **Dados de exemplo** baseados em chamadas reais
 
 ### 🎓 Editais UFJF
-- Coleta editais e chamadas da Pró-Reitoria de Pós-Graduação e Pesquisa da UFJF.
-- Fonte oficial: `https://www2.ufjf.br/propp/editais/`
+- Coleta somente editais de bolsas publicados pelo CRITT/UFJF.
+- Fonte oficial: `https://www2.ufjf.br/critt/vagas-e-bolsas-do-critt/controle-de-editais-2026/`
 
 ## 🏗️ Arquitetura
 

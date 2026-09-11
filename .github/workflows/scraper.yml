@@ -79,7 +79,7 @@ jobs:
                   dados = json.load(f)
                   for item in dados.get('ufjf', []):
                       if not item.get('link_pdf'):
-                          item['link_pdf'] = 'https://www2.ufjf.br/propp/editais/'
+                          item['link_pdf'] = 'https://www2.ufjf.br/critt/vagas-e-bolsas-do-critt/controle-de-editais-2026/'
                           item['tipo_link'] = 'Página com PDFs'
                       else:
                           item['tipo_link'] = 'PDF Direto'

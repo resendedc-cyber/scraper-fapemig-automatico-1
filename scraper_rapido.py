@@ -70,7 +70,7 @@ class ScraperRapido:
         print("🔍 Extraindo UFJF (modo rápido)...")
         
         try:
-            self.driver.get('https://www2.ufjf.br/propp/editais/')
+            self.driver.get('https://www2.ufjf.br/critt/vagas-e-bolsas-do-critt/controle-de-editais-2026/')
             time.sleep(2)
             
             # A UFJF usa páginas intermediárias e nem todos os editais apontam diretamente para PDF.
@@ -81,18 +81,18 @@ class ScraperRapido:
                     texto = edital.text.strip()
                     href = edital.get_attribute('href')
                     
-                    if texto and href and any(palavra in texto.lower() for palavra in ['edital', 'chamada', 'seleção']):
+                    if texto and href and 'bolsa' in texto.lower():
                         resultado = {
                             'titulo': texto,
                             'descricao': texto,
                             'link_pdf': href,
                             'data_limite': "",
-                            'fonte': 'UFJF',
+                            'fonte': 'UFJF/CRITT - Bolsas',
                             'data_coleta': datetime.now().isoformat()
                         }
                         
                         self.resultados['ufjf'].append(resultado)
-                        print(f"✅ UFJF: {texto[:50]}...")
+                        print(f"✅ UFJF/CRITT Bolsa: {texto[:50]}...")
                         
                 except Exception as e:
                     continue

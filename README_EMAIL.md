@@ -125,7 +125,7 @@ Após a configuração correta, você receberá emails automáticos como este:
 
 🔧 DADOS REORGANIZADOS:
    📄 FAPEMIG: 3 itens com PDFs
-   📄 UFMG: 4 itens com PDFs
+   📄 UFJF: 4 itens com PDFs
    📄 CNPQ: 4 itens com PDFs
    📊 TOTAL: 11 oportunidades
 

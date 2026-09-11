@@ -172,12 +172,12 @@ def criar_email_solucao_definitiva(dados):
             email_content.append(f"   🔗 Link Alternativo: {edital['link_alternativo']}")
             email_content.append("")
     
-    # UFMG
+    # UFJF
     if dados['editais_rapidos']:
         editais = dados['editais_rapidos']
-        if 'ufmg' in editais:
-            email_content.append("🏫 UFMG:")
-            email_content.append(f"   📊 {len(editais['ufmg'])} editais encontrados")
+        if 'ufjf' in editais:
+            email_content.append("🏫 UFJF:")
+            email_content.append(f"   📊 {len(editais['ufjf'])} editais encontrados")
             email_content.append("   ✅ PDFs diretos disponíveis")
             email_content.append("")
     
@@ -198,8 +198,8 @@ def criar_email_solucao_definitiva(dados):
         total_editais += len(dados['dados_reorganizados_solucao_definitiva']['fapemig'])
     
     if dados['editais_rapidos']:
-        if 'ufmg' in dados['editais_rapidos']:
-            total_editais += len(dados['editais_rapidos']['ufmg'])
+        if 'ufjf' in dados['editais_rapidos']:
+            total_editais += len(dados['editais_rapidos']['ufjf'])
         if 'cnpq' in dados['editais_rapidos']:
             total_editais += len(dados['editais_rapidos']['cnpq'])
     
@@ -209,7 +209,7 @@ def criar_email_solucao_definitiva(dados):
     
     email_content.append("🔧 DADOS REORGANIZADOS COM SOLUÇÃO DEFINITIVA:")
     email_content.append(f"   📄 FAPEMIG: {len(dados.get('fapemig_solucao_definitiva', {}).get('fapemig', [])) if dados.get('fapemig_solucao_definitiva') else 0} editais com TODOS os PDFs")
-    email_content.append(f"   📄 UFMG: {len(dados.get('editais_rapidos', {}).get('ufmg', [])) if dados.get('editais_rapidos') else 0} editais com PDFs diretos")
+    email_content.append(f"   📄 UFJF: {len(dados.get('editais_rapidos', {}).get('ufjf', [])) if dados.get('editais_rapidos') else 0} editais com PDFs diretos")
     email_content.append(f"   📄 CNPq: {len(dados.get('chamadas_cnpq_detalhadas', {}).get('chamadas_cnpq', [])) if dados.get('chamadas_cnpq_detalhadas') else 0} chamadas com links para PDFs")
     email_content.append(f"   📊 TOTAL: {total_editais} oportunidades")
     email_content.append("")

@@ -23,7 +23,7 @@ class ScraperRapido:
     def __init__(self):
         self.driver = None
         self.resultados = {
-            'ufmg': [],
+            'ufjf': [],
             'fapemig': [],
             'cnpq': [],
             'timestamp': datetime.now().isoformat()
@@ -65,42 +65,42 @@ class ScraperRapido:
             print(f"❌ Erro ao configurar navegador: {e}")
             return False
     
-    def extrair_ufmg_rapido(self):
-        """Extrai editais da UFMG de forma rápida"""
-        print("🔍 Extraindo UFMG (modo rápido)...")
+    def extrair_ufjf_rapido(self):
+        """Extrai editais da UFJF de forma rápida"""
+        print("🔍 Extraindo UFJF (modo rápido)...")
         
         try:
-            self.driver.get('https://www.ufmg.br/prograd/editais-chamadas/')
-            time.sleep(1)  # Era 3
+            self.driver.get('https://www2.ufjf.br/propp/editais/')
+            time.sleep(2)
             
-            # Buscar apenas links principais
-            editais = self.driver.find_elements(By.CSS_SELECTOR, 'a[href*=".pdf"]')
+            # A UFJF usa páginas intermediárias e nem todos os editais apontam diretamente para PDF.
+            editais = self.driver.find_elements(By.CSS_SELECTOR, 'a[href]')
             
             for edital in editais[:5]:  # Limitar a 5 resultados para teste
                 try:
                     texto = edital.text.strip()
                     href = edital.get_attribute('href')
                     
-                    if texto and href and any(palavra in texto.lower() for palavra in ['edital', 'chamada']):
+                    if texto and href and any(palavra in texto.lower() for palavra in ['edital', 'chamada', 'seleção']):
                         resultado = {
                             'titulo': texto,
                             'descricao': texto,
                             'link_pdf': href,
                             'data_limite': "",
-                            'fonte': 'UFMG',
+                            'fonte': 'UFJF',
                             'data_coleta': datetime.now().isoformat()
                         }
                         
-                        self.resultados['ufmg'].append(resultado)
-                        print(f"✅ UFMG: {texto[:50]}...")
+                        self.resultados['ufjf'].append(resultado)
+                        print(f"✅ UFJF: {texto[:50]}...")
                         
                 except Exception as e:
                     continue
             
-            print(f"✅ UFMG: {len(self.resultados['ufmg'])} editais encontrados")
+            print(f"✅ UFJF: {len(self.resultados['ufjf'])} editais encontrados")
             
         except Exception as e:
-            print(f"❌ Erro UFMG: {e}")
+            print(f"❌ Erro UFJF: {e}")
     
     def extrair_fapemig_rapido(self):
         """Extrai oportunidades da FAPEMIG de forma rápida"""
@@ -260,7 +260,7 @@ class ScraperRapido:
         
         try:
             # ⚡ EXECUÇÃO RÁPIDA
-            self.extrair_ufmg_rapido()
+            self.extrair_ufjf_rapido()
             self.extrair_fapemig_rapido()
             self.extrair_cnpq_rapido()
             
@@ -268,7 +268,7 @@ class ScraperRapido:
             arquivo_salvo = self.salvar_resultados()
             
             # Resumo rápido
-            total = len(self.resultados['ufmg']) + len(self.resultados['fapemig']) + len(self.resultados['cnpq'])
+            total = len(self.resultados['ufjf']) + len(self.resultados['fapemig']) + len(self.resultados['cnpq'])
             print(f"\n📊 TOTAL: {total} itens em tempo recorde!")
             
             return True

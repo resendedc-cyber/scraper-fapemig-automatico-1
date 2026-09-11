@@ -23,7 +23,7 @@ def reorganizar_dados():
     # Dados reorganizados com PDFs para todos
     dados_reorganizados = {
         'fapemig': [],
-        'ufmg': [],
+        'ufjf': [],
         'cnpq': [],
         'timestamp': datetime.now().isoformat(),
         'status': 'Reorganizado com PDFs para todos'
@@ -41,18 +41,18 @@ def reorganizar_dados():
                 item['instrucoes'] = 'Acesse a página para encontrar os PDFs dos editais'
                 dados_reorganizados['fapemig'].append(item)
     
-    # UFMG - Manter PDFs existentes
+    # UFJF - Manter PDFs existentes
     if editais_rapidos:
-        print(f"📄 Carregando dados da UFMG de: {editais_rapidos[-1]}")
+        print(f"📄 Carregando dados da UFJF de: {editais_rapidos[-1]}")
         with open(editais_rapidos[-1], 'r', encoding='utf-8') as f:
             dados = json.load(f)
-            for item in dados.get('ufmg', []):
+            for item in dados.get('ufjf', []):
                 if not item.get('link_pdf'):
-                    item['link_pdf'] = 'https://www.ufmg.br/prograd/editais-chamadas/'
+                    item['link_pdf'] = 'https://www2.ufjf.br/propp/editais/'
                     item['tipo_link'] = 'Página com PDFs'
                 else:
                     item['tipo_link'] = 'PDF Direto'
-                dados_reorganizados['ufmg'].append(item)
+                dados_reorganizados['ufjf'].append(item)
     
     # CNPq - Adicionar links que levam a PDFs
     if chamadas_detalhadas:
@@ -76,7 +76,7 @@ def reorganizar_dados():
     print(f"✅ Dados reorganizados salvos em: {nome_arquivo}")
     print(f"📊 Total de oportunidades: {sum(len(v) for v in dados_reorganizados.values() if isinstance(v, list))}")
     print(f"📄 FAPEMIG: {len(dados_reorganizados['fapemig'])} com links para PDFs")
-    print(f"📄 UFMG: {len(dados_reorganizados['ufmg'])} com PDFs diretos")
+    print(f"📄 UFJF: {len(dados_reorganizados['ufjf'])} com PDFs diretos")
     print(f"📄 CNPq: {len(dados_reorganizados['cnpq'])} com links para PDFs")
     
     return dados_reorganizados
@@ -98,10 +98,10 @@ def mostrar_relatorio_completo(dados):
         print(f"   💡 Instruções: {item['instrucoes']}")
         print()
     
-    # UFMG
-    print(f"\n🏫 UFMG - {len(dados['ufmg'])} EDITAIS")
+    # UFJF
+    print(f"\n🏫 UFJF - {len(dados['ufjf'])} EDITAIS")
     print("-" * 50)
-    for i, item in enumerate(dados['ufmg'], 1):
+    for i, item in enumerate(dados['ufjf'], 1):
         print(f"{i}. {item['titulo']}")
         print(f"   📄 Link: {item['link_pdf']}")
         print(f"   📝 Tipo: {item['tipo_link']}")

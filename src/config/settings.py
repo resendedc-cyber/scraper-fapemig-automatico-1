@@ -91,11 +91,11 @@ class ConfigManager:
                 max_items=10
             ),
 
-            'ufmg': ScraperConfig(
-                name='UFMG',
+            'ufjf': ScraperConfig(
+                name='UFJF',
                 urls=[
-                    'https://www.ufmg.br/prograd/editais-chamadas/',
-                    'https://www.ufmg.br/prograd/editais-chamadas/?o=aberto'
+                    'https://www2.ufjf.br/propp/editais/',
+                    'https://www2.ufjf.br/ufjf/editais/'
                 ],
                 selectors=['h3', 'h4', 'h5', '.edital-item', '.chamada-item', 'a'],
                 keywords=['EDITAL', 'CHAMADA', 'PROGRAMA', 'PROEX', 'PET-SAÚDE'],

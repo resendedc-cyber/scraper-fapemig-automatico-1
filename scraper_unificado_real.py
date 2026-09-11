@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
 """
-Scraper Unificado Real - FAPEMIG + UFMG + CNPq
+ Scraper Unificado Real - FAPEMIG + UFJF + CNPq
 ================================================
 
 Versão que acessa os sites reais e extrai informações detalhadas
-de todas as fontes: FAPEMIG, UFMG e CNPq.
+de todas as fontes: FAPEMIG, UFJF e CNPq.
 """
 
 import time
@@ -25,7 +25,7 @@ class ScraperUnificadoReal:
         self.driver = None
         self.resultados = {
             'fapemig': [],
-            'ufmg': [],
+            'ufjf': [],
             'cnpq': [],
             'timestamp': datetime.now().isoformat()
         }
@@ -159,12 +159,12 @@ class ScraperUnificadoReal:
             print(f"   ❌ Erro ao extrair info FAPEMIG: {e}")
             return None
     
-    def extrair_ufmg_real(self):
-        """Extrai informações reais da UFMG"""
-        print("🔍 Extraindo UFMG (site real)...")
+    def extrair_ufjf_real(self):
+        """Extrai informações reais da UFJF"""
+        print("🔍 Extraindo UFJF (site real)...")
         
         try:
-            url = "https://www.ufmg.br/prograd/editais-chamadas/?o=aberto"
+            url = "https://www2.ufjf.br/propp/editais/"
             self.driver.get(url)
             time.sleep(8)  # Aguardar carregamento completo
             
@@ -193,12 +193,12 @@ class ScraperUnificadoReal:
                             
                             if texto and len(texto) > 20 and any(palavra in texto.upper() for palavra in ['EDITAL', 'CHAMADA', 'PROGRAMA', 'PROEX', 'PET-SAÚDE', 'MOBILIDADE']):
                                 # Extrair informações do edital
-                                info_edital = self.extrair_info_ufmg(elem)
+                                info_edital = self.extrair_info_ufjf(elem)
                                 if info_edital:
                                     # Verificar se já existe
                                     if not any(r['titulo'] == info_edital['titulo'] for r in editais_encontrados):
                                         editais_encontrados.append(info_edital)
-                                        print(f"✅ UFMG: {info_edital['titulo'][:60]}...")
+                                        print(f"✅ UFJF: {info_edital['titulo'][:60]}...")
                                 
                                 # Limitar a 10 editais
                                 if len(editais_encontrados) >= 10:
@@ -216,17 +216,17 @@ class ScraperUnificadoReal:
             # Se não encontrou nada, tentar buscar por texto específico
             if not editais_encontrados:
                 print("   ⚠️  Nenhum edital encontrado, buscando por texto específico...")
-                self.buscar_editais_ufmg_por_texto()
+                self.buscar_editais_ufjf_por_texto()
             else:
-                self.resultados['ufmg'] = editais_encontrados
+                self.resultados['ufjf'] = editais_encontrados
             
-            print(f"✅ UFMG: {len(self.resultados['ufmg'])} editais extraídos")
+            print(f"✅ UFJF: {len(self.resultados['ufjf'])} editais extraídos")
             
         except Exception as e:
-            print(f"❌ Erro ao extrair UFMG: {e}")
+            print(f"❌ Erro ao extrair UFJF: {e}")
     
-    def extrair_info_ufmg(self, elemento):
-        """Extrai informações detalhadas de um edital da UFMG"""
+    def extrair_info_ufjf(self, elemento):
+        """Extrai informações detalhadas de um edital da UFJF"""
         try:
             # Pegar o elemento pai que contém mais contexto
             try:
@@ -266,7 +266,7 @@ class ScraperUnificadoReal:
                 'numero': numero,
                 'descricao': descricao,
                 'data_abertura': data_abertura,
-                'fonte': 'UFMG',
+                'fonte': 'UFJF',
                 'data_coleta': datetime.now().isoformat(),
                 'tem_pdf': tem_pdf,
                 'texto_completo': texto_completo[:500] + "..." if len(texto_completo) > 500 else texto_completo
@@ -275,11 +275,11 @@ class ScraperUnificadoReal:
             return resultado
             
         except Exception as e:
-            print(f"   ❌ Erro ao extrair info UFMG: {e}")
+            print(f"   ❌ Erro ao extrair info UFJF: {e}")
             return None
     
-    def buscar_editais_ufmg_por_texto(self):
-        """Busca editais da UFMG por texto específico"""
+    def buscar_editais_ufjf_por_texto(self):
+        """Busca editais da UFJF por texto específico"""
         print("   🔍 Buscando editais por texto específico...")
         
         # Textos específicos dos editais que sabemos que existem
@@ -310,7 +310,7 @@ class ScraperUnificadoReal:
                     
                     if texto_completo and len(texto_completo) > 50:
                         # Extrair informações do edital
-                        info_edital = self.extrair_info_ufmg_por_texto(texto_completo, texto_busca)
+                        info_edital = self.extrair_info_ufjf_por_texto(texto_completo, texto_busca)
                         if info_edital:
                             editais_encontrados.append(info_edital)
                             print(f"   ✅ Edital encontrado por texto: {info_edital['titulo'][:60]}...")
@@ -319,11 +319,11 @@ class ScraperUnificadoReal:
                 continue
         
         if editais_encontrados:
-            self.resultados['ufmg'] = editais_encontrados
+            self.resultados['ufjf'] = editais_encontrados
             print(f"   ✅ {len(editais_encontrados)} editais encontrados por texto específico")
     
-    def extrair_info_ufmg_por_texto(self, texto_completo, titulo_busca):
-        """Extrai informações de um edital da UFMG por texto"""
+    def extrair_info_ufjf_por_texto(self, texto_completo, titulo_busca):
+        """Extrai informações de um edital da UFJF por texto"""
         try:
             # Extrair número do edital
             numero_match = re.search(r'(\d{4}/\d{4})', titulo_busca)
@@ -342,7 +342,7 @@ class ScraperUnificadoReal:
                 'numero': numero,
                 'descricao': titulo_busca,
                 'data_abertura': data_abertura,
-                'fonte': 'UFMG',
+                'fonte': 'UFJF',
                 'data_coleta': datetime.now().isoformat(),
                 'tem_pdf': tem_pdf,
                 'texto_completo': texto_completo[:500] + "..." if len(texto_completo) > 500 else texto_completo
@@ -351,7 +351,7 @@ class ScraperUnificadoReal:
             return resultado
             
         except Exception as e:
-            print(f"   ❌ Erro ao extrair info UFMG por texto: {e}")
+            print(f"   ❌ Erro ao extrair info UFJF por texto: {e}")
             return None
     
     def extrair_cnpq_fallback(self):
@@ -399,8 +399,8 @@ class ScraperUnificadoReal:
             # Extrair FAPEMIG (site real)
             self.extrair_fapemig_real()
             
-            # Extrair UFMG (site real)
-            self.extrair_ufmg_real()
+            # Extrair UFJF (site real)
+            self.extrair_ufjf_real()
             
             # Extrair CNPq (fallback)
             self.extrair_cnpq_fallback()
@@ -410,13 +410,13 @@ class ScraperUnificadoReal:
             
             # Resumo
             total_fapemig = len(self.resultados['fapemig'])
-            total_ufmg = len(self.resultados['ufmg'])
+            total_ufjf = len(self.resultados['ufjf'])
             total_cnpq = len(self.resultados['cnpq'])
-            total_geral = total_fapemig + total_ufmg + total_cnpq
+            total_geral = total_fapemig + total_ufjf + total_cnpq
             
             print(f"\n📊 RESUMO DA EXTRAÇÃO UNIFICADA:")
             print(f"   FAPEMIG: {total_fapemig} chamadas")
-            print(f"   UFMG: {total_ufmg} editais")
+            print(f"   UFJF: {total_ufjf} editais")
             print(f"   CNPq: {total_cnpq} chamadas")
             print(f"   TOTAL: {total_geral} itens")
             
@@ -433,7 +433,7 @@ class ScraperUnificadoReal:
 
 def main():
     """Função principal"""
-    print("🌐 SCRAPER UNIFICADO REAL - FAPEMIG + UFMG + CNPq")
+    print("🌐 SCRAPER UNIFICADO REAL - FAPEMIG + UFJF + CNPq")
     print("=" * 70)
     
     scraper = ScraperUnificadoReal()

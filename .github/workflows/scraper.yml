@@ -28,18 +28,17 @@ jobs:
           pip install -r requirements-scraper.txt
           pip list
           
-      - name: 🚀 Executar scraper rápido (UFMG + FAPEMIG + CNPq)
+      - name: 🚀 Executar scraper rápido (UFJF + FAPEMIG + CNPq)
         run: python scraper_rapido.py
-        
+
       - name: 🔍 Executar scraper detalhado CNPq
         run: python scraper_cnpq_detalhado.py
-        
+
       - name: 🧠 Executar scraper inteligente CNPq
         run: python scraper_cnpq_inteligente.py
 
       - name: 🏛️ Executar coleta oficial CNPq, CAPES e MCTI
         run: python scraper_oportunidades_governo.py
-        
       - name: 🔧 Reorganizar dados para garantir PDFs para todos
         run: |
           python -c "
@@ -57,7 +56,7 @@ jobs:
           # Dados reorganizados com PDFs para todos
           dados_reorganizados = {
               'fapemig': [],
-              'ufmg': [],
+              'ufjf': [],
               'cnpq': [],
               'timestamp': datetime.now().isoformat(),
               'status': 'Reorganizado com PDFs para todos'
@@ -74,17 +73,18 @@ jobs:
                       item['instrucoes'] = 'Acesse a página para encontrar os PDFs dos editais'
                       dados_reorganizados['fapemig'].append(item)
           
-          # UFMG - Manter PDFs existentes
+          # UFJF - Manter PDFs existentes
           if editais_rapidos:
               with open(editais_rapidos[-1], 'r', encoding='utf-8') as f:
                   dados = json.load(f)
-                  for item in dados.get('ufmg', []):
+                  for item in dados.get('ufjf', []):
                       if not item.get('link_pdf'):
-                          item['link_pdf'] = 'https://www.ufmg.br/prograd/editais-chamadas/'
+                          item['link_pdf'] = 'https://www2.ufjf.br/propp/editais/'
                           item['tipo_link'] = 'Página com PDFs'
                       else:
                           item['tipo_link'] = 'PDF Direto'
-                      dados_reorganizados['ufmg'].append(item)
+                      dados_reorganizados['ufjf'].append(item)
+                  print(f'📄 UFJF: {len(dados_reorganizados["ufjf"])} com PDFs diretos')
           
           # CNPq - Adicionar links que levam a PDFs
           if chamadas_detalhadas:
@@ -107,7 +107,7 @@ jobs:
           print(f'✅ Dados reorganizados salvos em: {nome_arquivo}')
           print(f'📊 Total de oportunidades: {sum(len(v) for v in dados_reorganizados.values() if isinstance(v, list))}')
           print(f'📄 FAPEMIG: {len(dados_reorganizados[\"fapemig\"])} com links para PDFs')
-          print(f'📄 UFMG: {len(dados_reorganizados[\"ufmg\"])} com PDFs diretos')
+          print(f'📄 UFJF: {len(dados_reorganizados[\"ufjf\"])} com PDFs diretos')
           print(f'📄 CNPq: {len(dados_reorganizados[\"cnpq\"])} com links para PDFs')
           "
           

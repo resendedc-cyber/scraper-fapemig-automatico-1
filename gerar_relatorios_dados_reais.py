@@ -3,7 +3,7 @@
 
 """
 Gerador de Relatórios com Dados Reais
-Cria relatórios para CNPq, FAPEMIG e UFMG usando dados extraídos
+Cria relatórios para CNPq, FAPEMIG e UFJF usando dados extraídos
 """
 
 import json
@@ -28,7 +28,7 @@ def limpar_texto(texto):
     
     return texto
 
-def gerar_relatorio_texto_unificado(chamadas_cnpq, chamadas_fapemig, chamadas_ufmg):
+def gerar_relatorio_texto_unificado(chamadas_cnpq, chamadas_fapemig, chamadas_ufjf):
     """
     Gera relatório unificado em formato de texto
     """
@@ -36,7 +36,7 @@ def gerar_relatorio_texto_unificado(chamadas_cnpq, chamadas_fapemig, chamadas_uf
     relatorio.append("🎯 RELATÓRIO COMPLETO DE CHAMADAS E OPORTUNIDADES")
     relatorio.append("=" * 70)
     relatorio.append(f"📅 Data do relatório: {datetime.now().strftime('%d/%m/%Y às %H:%M')}")
-    relatorio.append(f"📊 Total geral: {len(chamadas_cnpq) + len(chamadas_fapemig) + len(chamadas_ufmg)} chamadas")
+    relatorio.append(f"📊 Total geral: {len(chamadas_cnpq) + len(chamadas_fapemig) + len(chamadas_ufjf)} chamadas")
     relatorio.append("")
     
     # CNPq
@@ -83,14 +83,14 @@ def gerar_relatorio_texto_unificado(chamadas_cnpq, chamadas_fapemig, chamadas_uf
             
             relatorio.append("")
     
-    # UFMG
-    if chamadas_ufmg:
-        relatorio.append("🎓 UFMG - UNIVERSIDADE FEDERAL DE MINAS GERAIS")
+    # UFJF
+    if chamadas_ufjf:
+        relatorio.append("🎓 UFJF - UNIVERSIDADE FEDERAL DE JUIZ DE FORA")
         relatorio.append("-" * 60)
-        relatorio.append(f"📊 Total: {len(chamadas_ufmg)} chamadas")
+        relatorio.append(f"📊 Total: {len(chamadas_ufjf)} chamadas")
         relatorio.append("")
         
-        for i, chamada in enumerate(chamadas_ufmg, 1):
+        for i, chamada in enumerate(chamadas_ufjf, 1):
             titulo_limpo = limpar_texto(chamada['titulo'])
             relatorio.append(f"{i}. {titulo_limpo}")
             
@@ -108,15 +108,15 @@ def gerar_relatorio_texto_unificado(chamadas_cnpq, chamadas_fapemig, chamadas_uf
     relatorio.append("📋 Fontes:")
     relatorio.append("   • CNPq: http://www.cnpq.br/")
     relatorio.append("   • FAPEMIG: http://www.fapemig.br/")
-    relatorio.append("   • UFMG: https://www.ufmg.br/")
+    relatorio.append("   • UFJF: https://www2.ufjf.br/ufjf/editais/")
     
     return "\n".join(relatorio)
 
-def gerar_relatorio_html_unificado(chamadas_cnpq, chamadas_fapemig, chamadas_ufmg):
+def gerar_relatorio_html_unificado(chamadas_cnpq, chamadas_fapemig, chamadas_ufjf):
     """
     Gera relatório unificado em formato HTML
     """
-    total_geral = len(chamadas_cnpq) + len(chamadas_fapemig) + len(chamadas_ufmg)
+    total_geral = len(chamadas_cnpq) + len(chamadas_fapemig) + len(chamadas_ufjf)
     
     html = f"""
 <!DOCTYPE html>
@@ -254,7 +254,7 @@ def gerar_relatorio_html_unificado(chamadas_cnpq, chamadas_fapemig, chamadas_ufm
         .fapemig {{
             border-left-color: #9b59b6 !important;
         }}
-        .ufmg {{
+        .ufjf {{
             border-left-color: #27ae60 !important;
         }}
     </style>
@@ -280,8 +280,8 @@ def gerar_relatorio_html_unificado(chamadas_cnpq, chamadas_fapemig, chamadas_ufm
                 <div class="stat-label">FAPEMIG</div>
             </div>
             <div class="stat-item">
-                <div class="stat-number">{len(chamadas_ufmg)}</div>
-                <div class="stat-label">UFMG</div>
+                <div class="stat-number">{len(chamadas_ufjf)}</div>
+                <div class="stat-label">UFJF</div>
             </div>
         </div>
         
@@ -390,20 +390,20 @@ def gerar_relatorio_html_unificado(chamadas_cnpq, chamadas_fapemig, chamadas_ufm
                 </div>
 """
     
-    # UFMG
-    if chamadas_ufmg:
+    # UFJF
+    if chamadas_ufjf:
         html += f"""
             <div class="fonte-section">
                 <div class="fonte-header">
-                    <h2>🎓 UFMG - Universidade Federal de Minas Gerais</h2>
-                    <div class="total">📊 {len(chamadas_ufmg)} chamadas encontradas</div>
+                    <h2>🎓 UFJF - Universidade Federal de Juiz de Fora</h2>
+                    <div class="total">📊 {len(chamadas_ufjf)} chamadas encontradas</div>
                 </div>
 """
         
-        for i, chamada in enumerate(chamadas_ufmg, 1):
+        for i, chamada in enumerate(chamadas_ufjf, 1):
             titulo_limpo = limpar_texto(chamada['titulo'])
             html += f"""
-                <div class="chamada ufmg">
+                <div class="chamada ufjf">
                     <h3>{i}. {titulo_limpo}</h3>
                     <div class="meta">
 """
@@ -448,7 +448,7 @@ def gerar_relatorio_html_unificado(chamadas_cnpq, chamadas_fapemig, chamadas_ufm
             📋 Fontes:<br>
             🔬 CNPq: <a href="http://www.cnpq.br/" target="_blank" style="color: #3498db;">http://www.cnpq.br/</a><br>
             🏛️ FAPEMIG: <a href="http://www.fapemig.br/" target="_blank" style="color: #3498db;">http://www.fapemig.br/</a><br>
-            🎓 UFMG: <a href="https://www.ufmg.br/" target="_blank" style="color: #3498db;">https://www.ufmg.br/</a><br>
+            🎓 UFJF: <a href="https://www2.ufjf.br/ufjf/editais/" target="_blank" style="color: #3498db;">https://www2.ufjf.br/ufjf/editais/</a><br>
             📅 Relatório gerado em: """ + datetime.now().strftime('%d/%m/%Y às %H:%M') + """<br>
             🎯 DADOS REAIS EXTRAÍDOS DOS SITES OFICIAIS
         </div>
@@ -459,11 +459,11 @@ def gerar_relatorio_html_unificado(chamadas_cnpq, chamadas_fapemig, chamadas_ufm
     
     return html
 
-def gerar_relatorio_markdown_unificado(chamadas_cnpq, chamadas_fapemig, chamadas_ufmg):
+def gerar_relatorio_markdown_unificado(chamadas_cnpq, chamadas_fapemig, chamadas_ufjf):
     """
     Gera relatório unificado em formato Markdown
     """
-    total_geral = len(chamadas_cnpq) + len(chamadas_fapemig) + len(chamadas_ufmg)
+    total_geral = len(chamadas_cnpq) + len(chamadas_fapemig) + len(chamadas_ufjf)
     
     relatorio = []
     relatorio.append("# 🎯 Relatório Completo de Chamadas e Oportunidades")
@@ -521,13 +521,13 @@ def gerar_relatorio_markdown_unificado(chamadas_cnpq, chamadas_fapemig, chamadas
             relatorio.append("---")
             relatorio.append("")
     
-    # UFMG
-    if chamadas_ufmg:
-        relatorio.append("## 🎓 UFMG - Universidade Federal de Minas Gerais")
-        relatorio.append(f"**Total:** {len(chamadas_ufmg)} chamadas  ")
+    # UFJF
+    if chamadas_ufjf:
+        relatorio.append("## 🎓 UFJF - Universidade Federal de Juiz de Fora")
+        relatorio.append(f"**Total:** {len(chamadas_ufjf)} chamadas  ")
         relatorio.append("")
         
-        for i, chamada in enumerate(chamadas_ufmg, 1):
+        for i, chamada in enumerate(chamadas_ufjf, 1):
             titulo_limpo = limpar_texto(chamada['titulo'])
             relatorio.append(f"### {i}. {titulo_limpo}")
             relatorio.append("")
@@ -549,7 +549,7 @@ def gerar_relatorio_markdown_unificado(chamadas_cnpq, chamadas_fapemig, chamadas
     relatorio.append("**Fontes:**  ")
     relatorio.append("- 🔬 CNPq: http://www.cnpq.br/  ")
     relatorio.append("- 🏛️ FAPEMIG: http://www.fapemig.br/  ")
-    relatorio.append("- 🎓 UFMG: https://www.ufmg.br/  ")
+    relatorio.append("- 🎓 UFJF: https://www2.ufjf.br/ufjf/editais/  ")
     relatorio.append("")
     relatorio.append("**🎯 IMPORTANTE:** Este relatório contém dados reais extraídos diretamente dos sites oficiais das instituições.")
     
@@ -569,12 +569,12 @@ def main():
         
         chamadas_cnpq = dados.get('cnpq', [])
         chamadas_fapemig = dados.get('fapemig', [])
-        chamadas_ufmg = dados.get('ufmg', [])
+        chamadas_ufjf = dados.get('ufjf', [])
         
         print(f"✅ Dados carregados:")
         print(f"   • CNPq: {len(chamadas_cnpq)} chamadas")
         print(f"   • FAPEMIG: {len(chamadas_fapemig)} chamadas")
-        print(f"   • UFMG: {len(chamadas_ufmg)} chamadas")
+        print(f"   • UFJF: {len(chamadas_ufjf)} chamadas")
         
     except FileNotFoundError:
         print("❌ Arquivo de dados não encontrado!")
@@ -587,19 +587,19 @@ def main():
     timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
     
     # Gera relatório unificado em texto
-    relatorio_texto = gerar_relatorio_texto_unificado(chamadas_cnpq, chamadas_fapemig, chamadas_ufmg)
+    relatorio_texto = gerar_relatorio_texto_unificado(chamadas_cnpq, chamadas_fapemig, chamadas_ufjf)
     with open(f"relatorio_completo_dados_reais_texto_{timestamp}.txt", 'w', encoding='utf-8') as f:
         f.write(relatorio_texto)
     print(f"✅ Relatório completo em texto salvo: relatorio_completo_dados_reais_texto_{timestamp}.txt")
     
     # Gera relatório unificado em HTML
-    relatorio_html = gerar_relatorio_html_unificado(chamadas_cnpq, chamadas_fapemig, chamadas_ufmg)
+    relatorio_html = gerar_relatorio_html_unificado(chamadas_cnpq, chamadas_fapemig, chamadas_ufjf)
     with open(f"relatorio_completo_dados_reais_html_{timestamp}.html", 'w', encoding='utf-8') as f:
         f.write(relatorio_html)
     print(f"✅ Relatório completo em HTML salvo: relatorio_completo_dados_reais_html_{timestamp}.html")
     
     # Gera relatório unificado em Markdown
-    relatorio_md = gerar_relatorio_markdown_unificado(chamadas_cnpq, chamadas_fapemig, chamadas_ufmg)
+    relatorio_md = gerar_relatorio_markdown_unificado(chamadas_cnpq, chamadas_fapemig, chamadas_ufjf)
     with open(f"relatorio_completo_dados_reais_md_{timestamp}.md", 'w', encoding='utf-8') as f:
         f.write(relatorio_md)
     print(f"✅ Relatório completo em Markdown salvo: relatorio_completo_dados_reais_md_{timestamp}.md")
@@ -612,8 +612,8 @@ def main():
     print(f"\n📊 Resumo:")
     print(f"   • CNPq: {len(chamadas_cnpq)} chamadas")
     print(f"   • FAPEMIG: {len(chamadas_fapemig)} chamadas")
-    print(f"   • UFMG: {len(chamadas_ufmg)} chamadas")
-    print(f"   • Total: {len(chamadas_cnpq) + len(chamadas_fapemig) + len(chamadas_ufmg)} chamadas")
+    print(f"   • UFJF: {len(chamadas_ufjf)} chamadas")
+    print(f"   • Total: {len(chamadas_cnpq) + len(chamadas_fapemig) + len(chamadas_ufjf)} chamadas")
     print("\n🎯 Todos os dados são REAIS e foram extraídos diretamente dos sites oficiais!")
 
 if __name__ == "__main__":

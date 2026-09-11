@@ -22,7 +22,7 @@ class ReorganizadorDadosSolucaoDefinitiva:
         self.dados_finais = {
             'fapemig': [],
             'cnpq': [],
-            'ufmg': [],
+            'ufjf': [],
             'timestamp': datetime.now().isoformat(),
             'total_editais': 0,
             'total_pdfs': 0,
@@ -51,16 +51,16 @@ class ReorganizadorDadosSolucaoDefinitiva:
             print("❌ Arquivo do CNPq não encontrado")
             arquivo_cnpq = None
         
-        # Buscar arquivos da UFMG (se existirem)
-        arquivos_ufmg = glob.glob("*ufmg*.json")
-        if arquivos_ufmg:
-            arquivo_ufmg = max(arquivos_ufmg, key=lambda x: os.path.getctime(x))
-            print(f"✅ UFMG: {arquivo_ufmg}")
+        # Buscar arquivos da UFJF (se existirem)
+        arquivos_ufjf = glob.glob("*ufjf*.json")
+        if arquivos_ufjf:
+            arquivo_ufjf = max(arquivos_ufjf, key=lambda x: os.path.getctime(x))
+            print(f"✅ UFJF: {arquivo_ufjf}")
         else:
-            print("⚠️ Arquivo da UFMG não encontrado")
-            arquivo_ufmg = None
+            print("⚠️ Arquivo da UFJF não encontrado")
+            arquivo_ufjf = None
         
-        return arquivo_fapemig, arquivo_cnpq, arquivo_ufmg
+        return arquivo_fapemig, arquivo_cnpq, arquivo_ufjf
     
     def processar_fapemig_solucao_definitiva(self, arquivo):
         """Processa dados da FAPEMIG com SOLUÇÃO DEFINITIVA"""
@@ -181,13 +181,13 @@ class ReorganizadorDadosSolucaoDefinitiva:
             print(f"❌ Erro ao processar CNPq: {e}")
             return 0, 0
     
-    def processar_ufmg(self, arquivo):
-        """Processa dados da UFMG (se existirem)"""
+    def processar_ufjf(self, arquivo):
+        """Processa dados da UFJF (se existirem)"""
         if not arquivo:
-            print("\n⚠️ UFMG: Nenhum arquivo encontrado para processar")
+            print("\n⚠️ UFJF: Nenhum arquivo encontrado para processar")
             return 0, 0
         
-        print("\n🏫 Processando UFMG...")
+        print("\n🏫 Processando UFJF...")
         
         try:
             with open(arquivo, 'r', encoding='utf-8') as f:
@@ -196,13 +196,13 @@ class ReorganizadorDadosSolucaoDefinitiva:
             editais_processados = 0
             pdfs_encontrados = 0
             
-            # Processar editais da UFMG (estrutura pode variar)
-            editais = dados.get('editais_ufmg', dados.get('ufmg', []))
+            # Processar editais da UFJF (estrutura pode variar)
+            editais = dados.get('editais_ufjf', dados.get('ufjf', []))
             
             for edital in editais:
                 try:
                     edital_processado = {
-                        'fonte': 'UFMG',
+                        'fonte': 'UFJF',
                         'titulo': edital.get('titulo', ''),
                         'numero': edital.get('numero', ''),
                         'data': edital.get('data', ''),
@@ -213,21 +213,21 @@ class ReorganizadorDadosSolucaoDefinitiva:
                         'solucao_definitiva': True
                     }
                     
-                    self.dados_finais['ufmg'].append(edital_processado)
+                    self.dados_finais['ufjf'].append(edital_processado)
                     editais_processados += 1
                     
                     if edital_processado['link_pdf'] or edital_processado['link_alternativo']:
                         pdfs_encontrados += 1
                     
                 except Exception as e:
-                    print(f"   ❌ Erro ao processar edital UFMG: {e}")
+                    print(f"   ❌ Erro ao processar edital UFJF: {e}")
                     continue
             
-            print(f"✅ UFMG: {editais_processados} editais processados, {pdfs_encontrados} PDFs encontrados")
+            print(f"✅ UFJF: {editais_processados} editais processados, {pdfs_encontrados} PDFs encontrados")
             return editais_processados, pdfs_encontrados
             
         except Exception as e:
-            print(f"❌ Erro ao processar UFMG: {e}")
+            print(f"❌ Erro ao processar UFJF: {e}")
             return 0, 0
     
     def calcular_totais_finais(self):
@@ -237,7 +237,7 @@ class ReorganizadorDadosSolucaoDefinitiva:
         total_editais = (
             len(self.dados_finais['fapemig']) +
             len(self.dados_finais['cnpq']) +
-            len(self.dados_finais['ufmg'])
+            len(self.dados_finais['ufjf'])
         )
         
         total_pdfs = 0
@@ -247,7 +247,7 @@ class ReorganizadorDadosSolucaoDefinitiva:
         for chamada in self.dados_finais['cnpq']:
             total_pdfs += len(chamada.get('links_importantes', []))
         
-        for edital in self.dados_finais['ufmg']:
+        for edital in self.dados_finais['ufjf']:
             if edital.get('link_pdf') or edital.get('link_alternativo'):
                 total_pdfs += 1
         
@@ -257,7 +257,7 @@ class ReorganizadorDadosSolucaoDefinitiva:
         print(f"📊 TOTAL FINAL:")
         print(f"   🏫 FAPEMIG: {len(self.dados_finais['fapemig'])} editais")
         print(f"   🔬 CNPq: {len(self.dados_finais['cnpq'])} chamadas")
-        print(f"   🎓 UFMG: {len(self.dados_finais['ufmg'])} editais")
+        print(f"   🎓 UFJF: {len(self.dados_finais['ufjf'])} editais")
         print(f"   📄 TOTAL: {total_editais} oportunidades, {total_pdfs} PDFs/links")
         
         return total_editais, total_pdfs
@@ -285,7 +285,7 @@ class ReorganizadorDadosSolucaoDefinitiva:
         print(f"⏰ Início: {datetime.now().strftime('%H:%M:%S')}")
         
         # Encontrar arquivos
-        arquivo_fapemig, arquivo_cnpq, arquivo_ufmg = self.encontrar_arquivos_solucao_definitiva()
+        arquivo_fapemig, arquivo_cnpq, arquivo_ufjf = self.encontrar_arquivos_solucao_definitiva()
         
         total_editais = 0
         total_pdfs = 0
@@ -302,11 +302,11 @@ class ReorganizadorDadosSolucaoDefinitiva:
             total_editais += chamadas_cnpq
             total_pdfs += links_cnpq
         
-        # Processar UFMG
-        if arquivo_ufmg:
-            editais_ufmg, pdfs_ufmg = self.processar_ufmg(arquivo_ufmg)
-            total_editais += editais_ufmg
-            total_pdfs += pdfs_ufmg
+        # Processar UFJF
+        if arquivo_ufjf:
+            editais_ufjf, pdfs_ufjf = self.processar_ufjf(arquivo_ufjf)
+            total_editais += editais_ufjf
+            total_pdfs += pdfs_ufjf
         
         # Calcular totais finais
         self.calcular_totais_finais()

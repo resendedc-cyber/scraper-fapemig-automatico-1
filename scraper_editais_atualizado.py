@@ -4,7 +4,7 @@ Scraper Atualizado para Editais e Chamadas
 ==========================================
 
 Sistema robusto que coleta informações completas de editais dos sites:
-- UFMG (Universidade Federal de Minas Gerais)
+- UFJF (Universidade Federal de Juiz de Fora)
 - FAPEMIG (Fundação de Amparo à Pesquisa de Minas Gerais)
 - CNPq (Conselho Nacional de Desenvolvimento Científico e Tecnológico)
 
@@ -31,7 +31,7 @@ class ScraperEditaisAtualizado:
     def __init__(self):
         self.driver = None
         self.resultados = {
-            'ufmg': [],
+            'ufjf': [],
             'fapemig': [],
             'cnpq': [],
             'timestamp': datetime.now().isoformat()
@@ -64,12 +64,12 @@ class ScraperEditaisAtualizado:
             print(f"❌ Erro ao configurar navegador: {e}")
             return False
     
-    def extrair_ufmg(self):
-        """Extrai editais da UFMG"""
-        print("\n🔍 Extraindo editais da UFMG...")
+    def extrair_ufjf(self):
+        """Extrai editais da UFJF"""
+        print("\n🔍 Extraindo editais da UFJF...")
         
         try:
-            self.driver.get('https://www.ufmg.br/prograd/editais-chamadas/')
+            self.driver.get('https://www2.ufjf.br/propp/editais/')
             time.sleep(3)
             
             # Aguardar carregamento da página
@@ -86,7 +86,7 @@ class ScraperEditaisAtualizado:
                     # Verificar se é um edital válido
                     if (texto and href and 
                         any(palavra in texto.lower() for palavra in ['edital', 'chamada', 'seleção', 'concurso']) and
-                        (href.endswith('.pdf') or 'pdf' in href.lower())):
+                        (href.startswith('http') and ('pdf' in href.lower() or 'edital' in href.lower() or 'chamada' in href.lower()))):
                         
                         # Extrair descrição (geralmente já está no texto)
                         desc = texto
@@ -116,26 +116,26 @@ class ScraperEditaisAtualizado:
                             'descricao': desc,
                             'link_pdf': href,
                             'data_limite': data_limite,
-                            'fonte': 'UFMG',
+                            'fonte': 'UFJF',
                             'data_coleta': datetime.now().isoformat()
                         }
                         
-                        self.resultados['ufmg'].append(resultado)
+                        self.resultados['ufjf'].append(resultado)
                         
-                        print(f"[UFMG] ✅ Encontrado:")
+                        print(f"[UFJF] ✅ Encontrado:")
                         print(f"   Título: {texto}")
                         print(f"   PDF: {href}")
                         print(f"   Data limite: {data_limite}")
                         print("   ---")
                         
                 except Exception as e:
-                    print(f"   ⚠️ Erro ao processar edital UFMG: {e}")
+                    print(f"   ⚠️ Erro ao processar edital UFJF: {e}")
                     continue
             
-            print(f"✅ UFMG: {len(self.resultados['ufmg'])} editais encontrados")
+            print(f"✅ UFJF: {len(self.resultados['ufjf'])} editais encontrados")
             
         except Exception as e:
-            print(f"❌ Erro ao extrair UFMG: {e}")
+            print(f"❌ Erro ao extrair UFJF: {e}")
     
     def extrair_fapemig(self):
         """Extrai oportunidades da FAPEMIG"""
@@ -441,12 +441,12 @@ class ScraperEditaisAtualizado:
         print("📊 RESUMO DA EXTRAÇÃO")
         print("="*60)
         
-        total_ufmg = len(self.resultados['ufmg'])
+        total_ufjf = len(self.resultados['ufjf'])
         total_fapemig = len(self.resultados['fapemig'])
         total_cnpq = len(self.resultados['cnpq'])
-        total_geral = total_ufmg + total_fapemig + total_cnpq
+        total_geral = total_ufjf + total_fapemig + total_cnpq
         
-        print(f"🏛️  UFMG: {total_ufmg} editais")
+        print(f"🏛️  UFJF: {total_ufjf} editais")
         print(f"🔬 FAPEMIG: {total_fapemig} oportunidades")
         print(f"📚 CNPq: {total_cnpq} chamadas")
         print(f"📈 TOTAL: {total_geral} itens encontrados")
@@ -477,7 +477,7 @@ class ScraperEditaisAtualizado:
         
         try:
             # Executar extrações
-            self.extrair_ufmg()
+            self.extrair_ufjf()
             self.extrair_fapemig()
             self.extrair_cnpq()
             

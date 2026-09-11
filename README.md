@@ -1,4 +1,4 @@
-# 🚀 Scraper de Editais e Chamadas - CNPq, FAPEMIG e UFMG
+# 🚀 Scraper de Editais e Chamadas - CNPq, FAPEMIG e UFJF
 
 Sistema automatizado para captura de editais, chamadas públicas e oportunidades de fomento das principais agências brasileiras.
 
@@ -6,7 +6,7 @@ Sistema automatizado para captura de editais, chamadas públicas e oportunidades
 
 ### 🔍 Scraper Rápido (`scraper_rapido.py`)
 - **Execução ultra-rápida** para coleta diária
-- **Múltiplas fontes**: CNPq, FAPEMIG e UFMG
+- **Múltiplas fontes**: CNPq, FAPEMIG e UFJF
 - **Timeouts otimizados** para ambiente CI/CD
 - **Fallback automático** para URLs alternativas
 
@@ -15,6 +15,10 @@ Sistema automatizado para captura de editais, chamadas públicas e oportunidades
 - **Informações detalhadas**: datas de inscrição, links permanentes, descrições completas
 - **Padrões inteligentes** para extração de dados estruturados
 - **Dados de exemplo** baseados em chamadas reais
+
+### 🎓 Editais UFJF
+- Coleta editais e chamadas da Pró-Reitoria de Pós-Graduação e Pesquisa da UFJF.
+- Fonte oficial: `https://www2.ufjf.br/propp/editais/`
 
 ## 🏗️ Arquitetura
 
@@ -50,7 +54,7 @@ python scraper_cnpq_detalhado.py
 
 ### Scraper Rápido
 - `editais_rapidos_YYYYMMDD_HHMMSS.json`
-- Estrutura: UFMG, FAPEMIG, CNPq
+- Estrutura: UFJF, FAPEMIG, CNPq
 
 ### Scraper Detalhado CNPq
 - `chamadas_cnpq_detalhadas_YYYYMMDD_HHMMSS.json`

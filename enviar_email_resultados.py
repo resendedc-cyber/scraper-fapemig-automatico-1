@@ -98,8 +98,8 @@ def criar_resumo_email(dados):
     if dados['editais_rapidos']:
         editais = dados['editais_rapidos']
         resumo.append("📋 SCRAPER RÁPIDO:")
-        if 'ufmg' in editais:
-            resumo.append(f"   🏫 UFMG: {len(editais['ufmg'])} editais encontrados")
+        if 'ufjf' in editais:
+            resumo.append(f"   🏫 UFJF: {len(editais['ufjf'])} editais encontrados")
         if 'fapemig' in editais:
             resumo.append(f"   🔬 FAPEMIG: {len(editais['fapemig'])} oportunidades encontradas")
         if 'cnpq' in editais:

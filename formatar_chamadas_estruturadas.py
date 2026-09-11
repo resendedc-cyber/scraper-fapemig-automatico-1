@@ -62,8 +62,8 @@ def formatar_chamada_fapemig(chamada):
         'fonte': 'FAPEMIG'
     }
 
-def formatar_chamada_ufmg(chamada):
-    """Formata uma chamada da UFMG"""
+def formatar_chamada_ufjf(chamada):
+    """Formata uma chamada da UFJF"""
     nome = chamada.get('titulo', 'Sem título')
     periodo = chamada.get('data_limite', '')
     link = chamada.get('link_pdf', '')
@@ -76,7 +76,7 @@ def formatar_chamada_ufmg(chamada):
         'nome': nome,
         'periodo': periodo,
         'link': link,
-        'fonte': 'UFMG'
+        'fonte': 'UFJF'
     }
 
 def formatar_todas_chamadas(arquivo_json):
@@ -100,10 +100,10 @@ def formatar_todas_chamadas(arquivo_json):
         for chamada in dados['fapemig']:
             chamadas_formatadas.append(formatar_chamada_fapemig(chamada))
     
-    # Processa UFMG
-    if 'ufmg' in dados and dados['ufmg']:
-        for chamada in dados['ufmg']:
-            chamadas_formatadas.append(formatar_chamada_ufmg(chamada))
+    # Processa UFJF
+    if 'ufjf' in dados and dados['ufjf']:
+        for chamada in dados['ufjf']:
+            chamadas_formatadas.append(formatar_chamada_ufjf(chamada))
     
     # Processa chamadas_cnpq (formato alternativo)
     if 'chamadas_cnpq' in dados and dados['chamadas_cnpq']:

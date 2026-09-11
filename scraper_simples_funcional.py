@@ -3,7 +3,7 @@
 
 """
 Scraper Simples e Funcional
-Busca dados reais de CNPq, FAPEMIG e UFMG
+Busca dados reais de CNPq, FAPEMIG e UFJF
 """
 
 import json
@@ -198,18 +198,18 @@ def extrair_chamadas_fapemig():
         print(f"❌ Erro ao extrair FAPEMIG: {e}")
         return []
 
-def extrair_chamadas_ufmg():
-    """Extrai chamadas da UFMG"""
-    print("🎓 Buscando chamadas da UFMG...")
+def extrair_chamadas_ufjf():
+    """Extrai chamadas da UFJF"""
+    print("🎓 Buscando chamadas da UFJF...")
     
     try:
-        url = "https://www.ufmg.br/prograd/editais/"
+        url = "https://www2.ufjf.br/propp/editais/"
         html = buscar_site(url)
         
         if not html:
             return []
         
-        # Busca por padrões de editais UFMG
+        # Busca por padrões de editais UFJF
         chamadas = []
         
         padroes_edital = [
@@ -235,7 +235,7 @@ def extrair_chamadas_ufmg():
                         'numero': numero,
                         'prazo_final': extrair_data_do_texto(contexto_limpo),
                         'link_pdf': url,
-                        'fonte': 'UFMG',
+                        'fonte': 'UFJF',
                         'data_coleta': datetime.now().isoformat()
                     }
                     chamadas.append(chamada)
@@ -248,11 +248,11 @@ def extrair_chamadas_ufmg():
                 chamadas_unicas.append(chamada)
                 numeros_vistos.add(chamada['numero'])
         
-        print(f"✅ UFMG: {len(chamadas_unicas)} chamadas encontradas")
+        print(f"✅ UFJF: {len(chamadas_unicas)} chamadas encontradas")
         return chamadas_unicas[:10]  # Limita a 10 resultados
         
     except Exception as e:
-        print(f"❌ Erro ao extrair UFMG: {e}")
+        print(f"❌ Erro ao extrair UFJF: {e}")
         return []
 
 def executar_scraping_completo():
@@ -263,14 +263,14 @@ def executar_scraping_completo():
     resultados = {
         'cnpq': [],
         'fapemig': [],
-        'ufmg': []
+        'ufjf': []
     }
     
     try:
         # Extrai dados de todas as fontes
         resultados['cnpq'] = extrair_chamadas_cnpq()
         resultados['fapemig'] = extrair_chamadas_fapemig()
-        resultados['ufmg'] = extrair_chamadas_ufmg()
+        resultados['ufjf'] = extrair_chamadas_ufjf()
         
         return resultados
         

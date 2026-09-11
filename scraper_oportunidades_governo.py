@@ -33,9 +33,9 @@ SOURCES = {
         "section": "1. Vagas:",
     },
     "iel": {
-        "nome": "IEL",
-        "url": "https://www.ielpr.com.br/",
-        "fallback": "https://www.portaldaindustria.com.br/iel/",
+        "nome": "IEL-MG/FIEMG",
+        "url": "https://www.fiemg.com.br/iel/",
+        "fallback": "https://ielmg.com.br/",
     },
     "cidades": {
         "nome": "Ministério das Cidades",

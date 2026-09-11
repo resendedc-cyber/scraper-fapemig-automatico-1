@@ -18,7 +18,7 @@ Sistema automatizado para captura de editais, chamadas públicas e oportunidades
 
 ### 🔎 Fontes monitoradas
 - CNPq, CAPES, MCTI, FAPEMIG e UFJF/CRITT.
-- IEL, usando o portal IEL acessível e fallback do portal nacional da indústria.
+- IEL-MG, usando o portal oficial do IEL/FIEMG.
 - Ministério das Cidades, usando o portal oficial de assuntos e programas.
 
 ### 🎓 Editais UFJF

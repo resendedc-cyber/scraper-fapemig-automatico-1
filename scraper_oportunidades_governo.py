@@ -32,6 +32,15 @@ SOURCES = {
         "keywords": re.compile(r"\bbolsa(?:s)?\b", re.IGNORECASE),
         "section": "1. Vagas:",
     },
+    "iel": {
+        "nome": "IEL",
+        "url": "https://www.ielpr.com.br/",
+        "fallback": "https://www.portaldaindustria.com.br/iel/",
+    },
+    "cidades": {
+        "nome": "Ministério das Cidades",
+        "url": "https://www.gov.br/cidades/pt-br/assuntos",
+    },
 }
 
 KEYWORDS = re.compile(
@@ -190,6 +199,8 @@ def main():
         "cnpq": [],
         "capes": [],
         "mcti": [],
+        "iel": [],
+        "cidades": [],
         "abertos": [],
         "antigos": [],
         "sem_prazo": [],

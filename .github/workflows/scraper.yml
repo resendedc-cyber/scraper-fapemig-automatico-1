@@ -37,7 +37,7 @@ jobs:
       - name: 🧠 Executar scraper inteligente CNPq
         run: python scraper_cnpq_inteligente.py
 
-      - name: 🏛️ Executar coleta oficial CNPq, CAPES e MCTI
+      - name: 🏛️ Executar coleta oficial CNPq, CAPES, MCTI, IEL e Cidades
         run: python scraper_oportunidades_governo.py
       - name: 🔧 Reorganizar dados para garantir PDFs para todos
         run: |

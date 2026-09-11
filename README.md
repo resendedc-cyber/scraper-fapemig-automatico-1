@@ -16,6 +16,11 @@ Sistema automatizado para captura de editais, chamadas públicas e oportunidades
 - **Padrões inteligentes** para extração de dados estruturados
 - **Dados de exemplo** baseados em chamadas reais
 
+### 🔎 Fontes monitoradas
+- CNPq, CAPES, MCTI, FAPEMIG e UFJF/CRITT.
+- IEL, usando o portal IEL acessível e fallback do portal nacional da indústria.
+- Ministério das Cidades, usando o portal oficial de assuntos e programas.
+
 ### 🎓 Editais UFJF
 - Coleta somente editais de bolsas publicados pelo CRITT/UFJF.
 - Fonte oficial: `https://www2.ufjf.br/critt/vagas-e-bolsas-do-critt/controle-de-editais-2026/`
